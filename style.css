@@ -1,0 +1,92 @@
+/* ヘッダー */
+.site-header {
+  background-color: black;
+  color: white;
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-inner {
+  max-width: 1000px;
+  margin: auto;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.site-nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 16px;
+  font-size: 14px;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+/* 既存スタイル（省略せず統合） */
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  margin: 0;
+  padding: 0; /* ヘッダー分はコンテンツ側で余白調整 */
+  text-align: center;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 24px;
+}
+
+.chart-wrap {
+  width: min(720px, 100%);
+  margin: 0 auto 12px;
+}
+
+.party-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.party-list button {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.party-list button:hover {
+  background-color: #f0f0f0;
+}
+
+.message {
+  margin-top: 8px;
+  color: green;
+  font-weight: bold;
+}
+
+.total-votes {
+  margin: 12px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+}
