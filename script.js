@@ -63,6 +63,25 @@ PARTIES.forEach(p => {
   btnWrap.appendChild(btn);
 });
 
+// APIからユーザ名を取得して表示
+async function fetchUsername() {
+  try {
+    const response = await fetch("http://localhost:8000/users");
+    if (!response.ok) {
+      throw new Error(`HTTPエラー: ${response.status}`);
+    }
+    const data = await response.json();
+
+    if (data.users && data.users.length > 0) {
+      document.getElementById("user_name").textContent = `APIからのメッセージ: ${data.users[0].user_name}`;
+    } else {
+      document.getElementById("user_name").textContent = "ユーザーが見つかりません";
+    }
+  } catch (error) {
+    document.getElementById("user_name").textContent = `取得失敗: ${error.message}`;
+  }
+}
+
 // APIからメッセージを取得して表示
 async function fetchMessage() {
   try {
@@ -83,6 +102,9 @@ async function fetchMessage() {
 
 // 初期描画
 refresh();
+
+// ページ読み込み時に取得
+fetchUsername();
 
 // ページ読み込み時に取得
 fetchMessage();
