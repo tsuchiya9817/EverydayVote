@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>政党投票サイト</title>
+  <title>いつでも比例投票</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,7 +12,7 @@
   <!-- ヘッダー -->
   <header class="site-header">
     <div class="header-inner">
-      <h1 class="site-title">政党投票サイト</h1>
+      <h1 class="site-title">いつでも比例投票</h1>
       <nav class="site-nav">
       </nav>
     </div>
@@ -20,7 +20,7 @@
 
   <!-- コンテンツ -->
   <div class="container">
-    <h2>いつでも政党投票</h2>
+    <h2>いつでも比例投票</h2>
 
     <div class="chart-wrap">
       <canvas id="voteChart"></canvas>
@@ -32,7 +32,8 @@
     <!-- 投票ボタン -->
     <div class="party-list" id="partyButtons"></div>
 
-    <div class="message" id="message"></div>
+    <!-- メッセージ表示（APIからのレスポンス） -->
+    <div class="message" id="message">読み込み中...</div>
   </div>
 
   <script src="script.js"></script>

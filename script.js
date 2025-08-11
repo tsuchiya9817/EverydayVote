@@ -1,3 +1,4 @@
+
 const PARTIES = [
   "自由民主党","公明党","立憲民主党","国民民主党",
   "日本維新の会","参政党","日本共産党","れいわ新選組",
@@ -62,5 +63,30 @@ PARTIES.forEach(p => {
   btnWrap.appendChild(btn);
 });
 
+// APIからメッセージを取得して表示
+async function fetchMessage() {
+  try {
+    const response = await fetch("http://localhost:8000/message");
+    if (!response.ok) {
+      throw new Error(`HTTPエラー: ${response.status}`);
+    }
+    const data = await response.json();
+    document.getElementById("message").textContent = `APIからのメッセージ: ${data.message}`;
+  } catch (error) {
+    document.getElementById("message").textContent = `取得失敗: ${error.message}`;
+  }
+}
+
+// ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊//
+// ロード処理　                                                                                                                                                                           // 
+// ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊//
+
 // 初期描画
 refresh();
+
+// ページ読み込み時に取得
+fetchMessage();
+
+
+
+
