@@ -61,7 +61,7 @@ def execute(query, params=None):
 
 @app.get("/users")
 def get_users():
-    users = fetch_all("SELECT user_name FROM Users")
+    users = fetch_all("SELECT user_name FROM Users Where id = 1")
     return {"users": users}
 
 @app.get("/party")
