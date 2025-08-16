@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:8000"; // APIベースURL
-let PARTIES = [];
-let votes = {};
+let PARTIES = [];   // { party_id, name, color, ruling_party } の配列
+let votes = {};     // { "党名": 投票数 }
 let chart;
 
 // ---------------------------//
@@ -36,96 +36,122 @@ async function apiPost(endpoint, body) {
 }
 
 // party_id を取得（「その他」は99固定）
-function getPartyId(party) {
-  return party === "その他" ? 99 : PARTIES.indexOf(party) + 1;
+function getPartyId(partyName) {
+  const party = PARTIES.find(p => p.name === partyName);
+  return party ? party.party_id : 99;
 }
 
-// ---------------------------
+// ---------------------------//
 // 投票数関連
-// ---------------------------
+// ---------------------------//
 
-// 投票数をDBから取得
 async function loadVotesFromDB() {
   const data = await apiGet("/votes");
   votes = data || {};
-  PARTIES.forEach(p => { if (votes[p] === undefined) votes[p] = 0; });
+  // すべての党を初期化
+  PARTIES.forEach(p => { if (votes[p.name] === undefined) votes[p.name] = 0; });
 }
 
-// ---------------------------
+// ---------------------------//
 // グラフ関連
-// ---------------------------
+// ---------------------------//
 
 function createChart() {
   const ctx = document.getElementById("voteChart").getContext("2d");
+  
   chart = new Chart(ctx, {
-    type: "pie",
+    type: "doughnut",
     data: {
-      labels: PARTIES,
-      datasets: [{ data: PARTIES.map(p => votes[p]) }]
+      labels: PARTIES.map(p => p.name),
+      datasets: [{
+        data: PARTIES.map(p => votes[p.name]),
+        backgroundColor: PARTIES.map(p => p.color),
+        borderColor: "#fff",
+        borderWidth: 2,
+        hoverOffset: 15
+      }]
     },
-    options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+    options: { 
+      responsive: true, 
+      plugins: { 
+        legend: { 
+          position: "bottom",
+          labels: { font: { size: 14 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || "";
+              const value = context.parsed;
+              const total = context.chart._metasets[0].total;
+              const percentage = ((value / total) * 100).toFixed(1);
+              return `${label}: ${value}票 (${percentage}%)`;
+            }
+          }
+        }
+      },
+      cutout: "60%"
+    }
   });
 }
 
 function refresh() {
-  chart.data.labels = PARTIES;
-  chart.data.datasets[0].data = PARTIES.map(p => votes[p]);
+  chart.data.labels = PARTIES.map(p => p.name);
+  chart.data.datasets[0].data = PARTIES.map(p => votes[p.name]);
   chart.update();
   const total = Object.values(votes).reduce((a,b)=>a+b,0);
   document.getElementById("totalVotes").textContent = `総投票数: ${total}票`;
 }
 
-// ---------------------------
-// ボタン関連
-// ---------------------------
+// ---------------------------//
+// ボタン生成
+// ---------------------------//
 
 function createButtons() {
   const btnWrap = document.getElementById("partyButtons");
   btnWrap.innerHTML = "";
   PARTIES.forEach(p => {
     const btn = document.createElement("button");
-    btn.textContent = p;
-    btn.onclick = () => vote(p);
+    btn.textContent = p.name;
+    btn.style.backgroundColor = p.color; // ボタンにも色を反映
+    btn.onclick = () => vote(p.name);
     btnWrap.appendChild(btn);
   });
 }
 
-// ---------------------------
+// ---------------------------//
 // 投票処理
-// ---------------------------
+// ---------------------------//
 
-async function vote(party) {
+async function vote(partyName) {
   try {
     const user_id = sessionStorage.getItem("user_id");
-
-    if (user_id == null) {
-      // ログインページにリダイレクト
+    if (!user_id) {
       window.location.href = "login.html";
-      return; // ここで処理を中断
+      return;
     }
 
-    const party_id = getPartyId(party);
-
+    const party_id = getPartyId(partyName);
     const result = await apiPost("/vote", { user_id, party_id });
     if (!result) throw new Error("投票の保存に失敗");
 
     await loadVotesFromDB();
     refresh();
 
-    document.getElementById("message").textContent = `${party} に投票しました！`;
+    document.getElementById("message").textContent = `${partyName} に投票しました！`;
   } catch (error) {
     console.error(error);
     alert("投票の保存に失敗しました");
   }
 }
 
-// ---------------------------
+// ---------------------------//
 // 新規登録
-// ---------------------------
+// ---------------------------//
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("registerForm");
-  if (!form) return; // 登録フォームが存在しなければ処理しない
+  if (!form) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -135,13 +161,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("register_password").value;
     const confirm_password = document.getElementById("register_confirm_password").value;
 
-    // パスワード確認
     if (password !== confirm_password) {
       alert("パスワードと確認用パスワードが一致しません");
       return;
     }
 
-    // 電話番号バリデーション：数字11桁
     const phoneRegex = /^\d{11}$/;
     if (!phoneRegex.test(phone)) {
       alert("電話番号は数字11桁で入力してください");
@@ -149,130 +173,92 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const payload = { phone, user_id, password };
-    console.log("送信するデータ:", payload);
-
     try {
-      const response = await fetch(`${API_BASE_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error(`HTTPエラー: ${response.status}`);
-
-      const data = await response.json();
-      console.log("APIレスポンス:", data);
-
-      if (data.success) {
-        alert("登録が完了しました。ログイン画面に移動します。");
-        window.location.href = "login.html";
+      const response = await apiPost("/register", payload);
+      if (response.success) {
+        sessionStorage.setItem("user_id", user_id);
+        window.location.href = "index.html";
       } else {
-        alert("登録に失敗しました: " + (data.message || "不明なエラー"));
+        alert("登録に失敗しました: " + (response.message || "不明なエラー"));
       }
-    } catch (error) {
-      console.error("登録リクエスト失敗:", error);
+    } catch (err) {
+      console.error(err);
       alert("サーバーに接続できませんでした");
     }
   });
 });
 
-
-// ---------------------------
+// ---------------------------//
 // ログイン認証
-// ---------------------------
+// ---------------------------//
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ログインフォームが存在する場合のみ処理
   const loginForm = document.querySelector("form");
-  if (!loginForm) return; // フォームがなければ処理しない
+  if (!loginForm) return;
 
   loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // フォーム送信を止める
-
+    e.preventDefault();
     const inputUserId = document.getElementById("user_id").value;
     const inputPassword = document.getElementById("password").value;
 
-    console.log("送信する値:", { user_id: inputUserId, password: inputPassword });
-
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: inputUserId,
-          password: inputPassword,
-        }),
-      });
-
-      console.log("HTTPステータス:", response.status);
-
-      if (!response.ok) {
-        throw new Error(`HTTPエラー: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("APIからのレスポンス:", data);
-
+      const data = await apiPost("/login", { user_id: inputUserId, password: inputPassword });
       if (data.success) {
-        console.log("ログイン成功, セッションに保存");
         sessionStorage.setItem("user_id", data.user_id);
-
         window.location.href = "index.html";
       } else {
-        console.warn("ログイン失敗: ユーザーIDまたはパスワードが違います");
         alert("ユーザーIDまたはパスワードが違います");
       }
-    } catch (error) {
-      console.error("ログインリクエスト失敗:", error);
+    } catch (err) {
+      console.error(err);
       alert("サーバーに接続できませんでした");
     }
   });
 });
 
-
-
-// ---------------------------
-// ログイン認証後処理
-// ---------------------------
+// ---------------------------//
+// ログイン済みかチェック
+// ---------------------------//
 
 document.addEventListener("DOMContentLoaded", () => {
-    const user_id = sessionStorage.getItem("user_id");
-    const userDiv = document.getElementById("user_id");
+  const user_id = sessionStorage.getItem("user_id");
+  const userDiv = document.getElementById("user_id");
 
-    if (user_id) {
-      // ログイン済みならユーザーIDとログアウトリンクを表示
-      userDiv.innerHTML = `
-        <span>${user_id}</span> / 
-        <a href="#" id="logout">ログアウト</a>
-      `;
+  if (user_id) {
+    userDiv.innerHTML = `
+      <span>${user_id}</span> / 
+      <a href="#" id="logout">ログアウト</a>
+    `;
+    document.getElementById("logout").addEventListener("click", e => {
+      e.preventDefault();
+      sessionStorage.removeItem("user_id");
+      window.location.href = "index.html";
+    });
+  } else {
+    userDiv.innerHTML = `<a href="login.html">ログイン</a> / <a href="signup.html">新規登録</a>`;
+  }
+});
 
-      // ログアウト処理
-      document.getElementById("logout").addEventListener("click", (e) => {
-        e.preventDefault();
-        sessionStorage.removeItem("user_id"); // 保存データを消す
-        window.location.href = "index.html";  // ログイン画面へ戻す
-      });
-    } else {
-      // 未ログインならログインリンクのまま
-      userDiv.innerHTML = `<a href="login.html">ログイン</a> / <a href="signup.html">新規登録</a>`;
-    }
-  });
-
-// ---------------------------
+// ---------------------------//
 // 初期化
-// ---------------------------
+// ---------------------------//
 
 async function init() {
-  const data = await apiGet("/party");
-  if (!data) { alert("パーティデータ取得失敗"); return; }
+  const overlay = document.getElementById("loading-overlay");
+  overlay.style.display = "flex";
 
-  PARTIES = data.map(item => item.name);
-  await loadVotesFromDB();
-  createButtons();
-  createChart();
-  refresh();
+  try {
+    const data = await apiGet("/party");
+    if (!data) { alert("パーティデータ取得失敗"); return; }
+
+    PARTIES = data;  // ← オブジェクト配列のまま保持
+    await loadVotesFromDB();
+    createButtons();
+    createChart();
+    refresh();
+  } finally {
+    overlay.style.display = "none";
+  }
 }
 
 init();

@@ -9,6 +9,12 @@
 </head>
 <body>
 
+  <!-- ロード中オーバーレイ（body直下に置く） -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">ロード中…</div>
+  </div>
+
   <!-- ヘッダー -->
   <header class="site-header">
   <div class="header-inner">
@@ -31,6 +37,7 @@
 
   <!-- コンテンツ -->
   <div class="container">
+
     <div class="chart-wrap">
       <canvas id="voteChart"></canvas>
     </div>
