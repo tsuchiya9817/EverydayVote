@@ -38,15 +38,19 @@
   <!-- コンテンツ -->
   <div class="container">
 
+        <!-- 総投票数表示 -->
+    <div class="total-votes" id="totalVotes">総投票数: 0票</div>
+
     <div class="chart-wrap">
       <canvas id="voteChart"></canvas>
     </div>
 
-    <!-- 総投票数表示 -->
-    <div class="total-votes" id="totalVotes">総投票数: 0票</div>
-
     <!-- 投票ボタン -->
-    <div class="party-list" id="partyButtons"></div>
+    <h3>与党</h3>
+    <div class="party-list" id="partyButtonsRuling"></div>
+
+    <h3>野党</h3>
+    <div class="party-list" id="partyButtonsOpposition"></div>
 
     <!-- メッセージ表示（APIからのレスポンス） -->
     <div class="message" id="message">投票よろしくお願いします</div>

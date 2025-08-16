@@ -85,7 +85,13 @@ function createChart() {
               const value = context.parsed;
               const total = context.chart._metasets[0].total;
               const percentage = ((value / total) * 100).toFixed(1);
-              return `${label}: ${value}票 (${percentage}%)`;
+
+              // ホバー対象の党の情報を取得
+              const party = PARTIES.find(p => p.name === label);
+              const seatsLower = party ? party.seats_lower : 0;
+              const seatsUpper = party ? party.seats_upper : 0;
+
+              return `${label}: ${value}票 (${percentage}%) | 衆${seatsLower} / 参${seatsUpper}`;
             }
           }
         }
@@ -108,14 +114,23 @@ function refresh() {
 // ---------------------------//
 
 function createButtons() {
-  const btnWrap = document.getElementById("partyButtons");
-  btnWrap.innerHTML = "";
+  const rulingWrap = document.getElementById("partyButtonsRuling");
+  const oppositionWrap = document.getElementById("partyButtonsOpposition");
+  
+  rulingWrap.innerHTML = "";
+  oppositionWrap.innerHTML = "";
+
   PARTIES.forEach(p => {
     const btn = document.createElement("button");
     btn.textContent = p.name;
-    btn.style.backgroundColor = p.color; // ボタンにも色を反映
+    btn.style.backgroundColor = p.color;
     btn.onclick = () => vote(p.name);
-    btnWrap.appendChild(btn);
+
+    if (p.ruling_party === 1) {
+      rulingWrap.appendChild(btn);
+    } else {
+      oppositionWrap.appendChild(btn);
+    }
   });
 }
 

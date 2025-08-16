@@ -66,7 +66,10 @@ def get_parties():
     parties = fetch_all("""
         SELECT * 
         FROM parties
-        ORDER BY ruling_party DESC, party_id ASC
+        ORDER BY 
+            CASE WHEN party_id = 99 THEN 1 ELSE 0 END,  -- party_id=99 を最後に
+            ruling_party DESC, 
+            (seats_lower + seats_upper) DESC
     """)
     return parties
 
