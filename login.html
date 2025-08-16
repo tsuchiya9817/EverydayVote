@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン - いつでも比例投票</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ヘッダー -->
+  <header class="site-header">
+  <div class="header-inner">
+    <!-- タイトルをクリックしたら index.html -->
+    <h1 class="site-title">
+      <a href="index.html">いつでも比例投票</a>
+    </h1>
+
+    <nav class="site-nav">
+      <!-- 必要ならメニューをここに追加 -->
+    </nav>
+  </div>
+  </header>
+
+  <main class="login-container">
+    <h2>ログイン</h2>
+    <form>
+      <label for="user_id">ユーザーID</label>
+      <input type="text" id="user_id" name="user_id" required>
+
+      <label for="password">パスワード</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">ログイン</button>
+    </form>
+    <!-- ログインをクリックしたら login.html -->
+    <div class="signup" id="signup">
+      <a href="signup.html">新規登録</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2025 いつでも比例投票</p>
+  </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

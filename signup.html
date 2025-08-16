@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>新規登録 - いつでも比例投票</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ヘッダー -->
+  <header class="site-header">
+  <div class="header-inner">
+    <!-- タイトルをクリックしたら index.html -->
+    <h1 class="site-title">
+      <a href="index.html">いつでも比例投票</a>
+    </h1>
+
+    <nav class="site-nav">
+      <!-- 必要ならメニューをここに追加 -->
+    </nav>
+  </div>
+  </header>
+
+  <!-- 登録フォーム -->
+  <main class="register-container">
+    <h2>新規登録</h2>
+    <form id="registerForm">
+      <label for="phone">電話番号</label>
+      <input type="tel" id="register_phone" name="phone" required>
+
+      <label for="user_id">ユーザーID</label>
+      <input type="text" id="register_user_id" name="user_id" required>
+
+      <label for="password">パスワード</label>
+      <input type="password" id="register_password" name="password" required>
+
+      <label for="confirm_password">パスワード（再確認）</label>
+      <input type="password" id="register_confirm_password" name="confirm_password" required>
+
+      <button type="submit">登録</button>
+    </form>
+    <!-- ログインをクリックしたら login.html -->
+    <div class="login" id="login">
+      <a href="login.html">ログイン</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; 2025 いつでも比例投票</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

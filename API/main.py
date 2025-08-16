@@ -1,6 +1,8 @@
-from fastapi import FastAPI # type: ignore
+from sqlite3 import Cursor
+from fastapi import FastAPI, Request # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 import mysql.connector  # type: ignore # MySQL接続用
+from fastapi.responses import JSONResponse # type: ignore
 
 # // ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊//#
 # // API起動コマンド                                                                                                                                                                        //#
@@ -59,14 +61,9 @@ def execute(query, params=None):
 # API
 # ---------------------------
 
-@app.get("/users")
-def get_users():
-    users = fetch_all("SELECT user_name FROM Users Where id = 1")
-    return {"users": users}
-
 @app.get("/party")
 def get_parties():
-    parties = fetch_all("SELECT id, name FROM parties")
+    parties = fetch_all("SELECT party_id, name FROM parties")
     return parties
 
 @app.get("/votes")
@@ -74,9 +71,9 @@ def get_votes():
     result = fetch_all("""
         SELECT p.name, COUNT(v.user_id) AS count
         FROM parties p
-        LEFT JOIN votes v ON p.id = v.party_id
-        GROUP BY p.id, p.name
-        ORDER BY p.id
+        LEFT JOIN votes v ON p.party_id = v.party_id
+        GROUP BY p.party_id, p.name
+        ORDER BY p.party_id
     """)
     # {"自由民主党": 10, "公明党": 5, ...} の形に変換
     votes_dict = {row['name']: row['count'] for row in result}
@@ -95,6 +92,59 @@ async def vote_party(vote: dict):
     execute("INSERT INTO votes (user_id, party_id) VALUES (%s, %s)", (user_id, party_id))
 
     return {"message": "投票を保存しました"}
+
+@app.post("/login")
+async def login(req: Request):
+    data = await req.json()
+    user_id = data.get("user_id")
+    password = data.get("password")
+
+    print("Login try:", user_id, password)  # 送信された値をログ出力
+
+    query = "SELECT * FROM users WHERE user_id = %s AND password = %s"
+    result = fetch_all(query, (user_id, password))
+
+    print("DB result:", result)  # DBから返ってきた結果をログ出力
+
+    if result:  # 1件以上あればログイン成功
+        print("Login success!")
+        return {"success": True, "user_id": user_id}
+    else:
+        print("Login failed")
+        return {"success": False}
+    
+@app.post("/register")
+async def register(req: Request):
+    data = await req.json()
+    user_id = data.get("user_id")
+    password = data.get("password")
+    phone = data.get("phone")
+
+    print("Register try:", phone, user_id, password)
+
+    # 同じユーザーIDまたは電話番号が存在するかチェック
+    query_check = "SELECT * FROM users WHERE user_id = %s OR tel = %s"
+    existing = fetch_all(query_check, (user_id, phone))
+    print("DB result (check):", existing)
+
+    if existing:
+        for row in existing:
+            if row["user_id"] == user_id:
+                return {"success": False, "message": "このユーザーIDは既に使われています"}
+            if row["tel"] == phone:
+                return {"success": False, "message": "この電話番号は既に使われています"}
+
+    # 新規ユーザーを挿入
+    query_insert = "INSERT INTO users (user_id, password, tel) VALUES (%s, %s, %s)"
+    try:
+        execute(query_insert, (user_id, password, phone))
+        print("Register success!")
+        return {"success": True}
+    except Exception as e:
+        print("Register failed:", e)
+        return {"success": False, "message": "データベースエラー"}
+
+
 
 
 
