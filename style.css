@@ -18,17 +18,43 @@
   align-items: center;
 }
 
+/* ヘッダー右側のログイン / 新規登録リンク */
+.user_id a {
+  color: white;           /* 文字色を白に */
+  text-decoration: none;  /* 下線を消す */
+  margin-left: 10px;      /* リンク間のスペース */
+  font-weight: bold;      /* 太字にする場合 */
+}
+
+.user_id a:hover {
+  text-decoration: underline; /* ホバー時のみ下線 */
+  color: #ffffffcc;           /* 少し透過させる例 */
+}
+
+/* ヘッダー右側のログイン / 新規登録リンク */
+.site-title a {
+  color: white;           /* 文字色を白に */
+  text-decoration: none;  /* 下線を消す */
+  margin-left: 10px;      /* リンク間のスペース */
+  font-weight: bold;      /* 太字にする場合 */
+}
+
+.site-title a:hover {
+  text-decoration: underline; /* ホバー時のみ下線 */
+  color: #ffffffcc;           /* 少し透過させる例 */
+}
+
 .site-title {
   font-size: 20px;
   font-weight: bold;
   margin: 0;
 }
 
-.user_name {
+/* .user_name {
   margin-top: 8px;
   color: Write;
   font-weight: bold;
-}
+} */
 
 .site-nav a {
   color: white;
@@ -95,4 +121,122 @@ body {
   font-size: 18px;
   font-weight: bold;
   color: #222;
+}
+
+/* --------------------------
+   ロード中オーバーレイ
+--------------------------- */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明で他の要素を隠す */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+  display: none; /* 初期は非表示 */
+}
+
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+
+/* ------------------------------------------------------------------------------------------- */
+/* ログイン画面、新規登録画面のスタイル */
+/* ------------------------------------------------------------------------------------------- */
+
+
+/* login.css: ログイン・登録専用スタイル */
+.login-container, .register-container {
+  max-width: 400px;
+  margin: 80px auto 40px auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.login-container h2, .register-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #222;
+  font-size: 24px;
+}
+
+.login-container form label, .register-container form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.login-container form input, .register-container form input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.login-container form input:focus, .register-container form input:focus {
+  border-color: #007BFF;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0,123,255,0.3);
+}
+
+.login-container form button, .register-container form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007BFF;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-container form button:hover, .register-container form button:hover {
+  background-color: #0056b3;
+}
+
+.signup, .login {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.signup a, .login a {
+  color: #007BFF;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.signup a:hover, .login a:hover {
+  text-decoration: underline;
 }

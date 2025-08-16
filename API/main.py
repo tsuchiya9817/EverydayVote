@@ -63,7 +63,11 @@ def execute(query, params=None):
 
 @app.get("/party")
 def get_parties():
-    parties = fetch_all("SELECT party_id, name FROM parties")
+    parties = fetch_all("""
+        SELECT * 
+        FROM parties
+        ORDER BY ruling_party DESC, party_id ASC
+    """)
     return parties
 
 @app.get("/votes")
