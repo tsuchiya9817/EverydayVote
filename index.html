@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <!-- ロード中オーバーレイ（body直下に置く） -->
   <div id="loading-overlay">
     <div class="spinner"></div>
@@ -39,21 +38,17 @@
   <div class="container">
 
         <!-- 総投票数表示 -->
-    <div class="total-votes" id="totalVotes">総投票数: 0票</div>
+    <div class="total-votes" id="totalVotes"></div>
 
+    <!-- メッセージ表示（APIからのレスポンス） -->
+    <div class="message" id="message">グラフをクリックして投票お願いします！</div>
+    <br>
     <div class="chart-wrap">
       <canvas id="voteChart"></canvas>
     </div>
 
-    <!-- 投票ボタン -->
-    <h3>与党</h3>
-    <div class="party-list" id="partyButtonsRuling"></div>
-
-    <h3>野党</h3>
-    <div class="party-list" id="partyButtonsOpposition"></div>
-
-    <!-- メッセージ表示（APIからのレスポンス） -->
-    <div class="message" id="message">投票よろしくお願いします</div>
+    <h3>年代別投票状況</h3>
+    <div id="ageVoteTable"></div>
   </div>
 
   <footer class="site-footer">
@@ -63,5 +58,7 @@
 </footer>
 
   <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </body>
 </html>
