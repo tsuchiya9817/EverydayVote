@@ -66,7 +66,10 @@ def get_parties():
     parties = fetch_all("""
         SELECT * 
         FROM parties
-        ORDER BY ruling_party DESC, party_id ASC
+        ORDER BY 
+            CASE WHEN party_id = 99 THEN 1 ELSE 0 END,  -- party_id=99 を最後に
+            ruling_party DESC, 
+            (seats_lower + seats_upper) DESC
     """)
     return parties
 
@@ -147,6 +150,66 @@ async def register(req: Request):
     except Exception as e:
         print("Register failed:", e)
         return {"success": False, "message": "データベースエラー"}
+    
+@app.get("/prefectures")
+async def get_prefectures():
+    prefectures = fetch_all("SELECT prefecture_id, prefecture_name FROM prefectures")
+    return prefectures
+
+@app.get("/districts")
+async def get_districts():
+    districts = fetch_all("SELECT district_id, prefecture_id, district_name FROM districts")
+    return districts
+
+@app.post("/update_profile")
+async def update_profile(req: Request):
+    data = await req.json()
+    user_id = data.get("user_id")
+    birthdate = data.get("birthdate")
+    gender = data.get("gender")
+    prefecture_id = data.get("prefecture_id")
+    district_id = data.get("district_id")
+
+    try:
+        sql = """
+            UPDATE users
+            SET birth_date=%s, gender=%s, prefecture_id=%s, district_id=%s
+            WHERE user_id=%s
+        """
+        params = (birthdate, gender, prefecture_id, district_id, user_id)
+        execute(sql, params)
+
+        return JSONResponse({"success": True})
+
+    except Exception as e:
+        print("Error:", e)
+        return JSONResponse({"success": False, "error": str(e)})
+    
+@app.get("/get_profile")
+async def get_profile(user_id: str):
+    try:
+        sql = """
+            SELECT 
+                u.user_id,
+                u.birth_date,
+                u.gender,
+                u.tel,
+                p.prefecture_name,
+                d.district_name
+            FROM users u
+            LEFT JOIN prefectures p ON u.prefecture_id = p.prefecture_id
+            LEFT JOIN districts d ON u.district_id = d.district_id
+                AND d.prefecture_id = u.prefecture_id
+            WHERE u.user_id=%s
+        """
+        result = fetch_all(sql, (user_id,))
+        if not result:
+            return {"success": False, "error": "ユーザーが見つかりません"}
+        return {"success": True, "data": result[0]}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 
 
 
