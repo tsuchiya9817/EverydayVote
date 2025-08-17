@@ -168,8 +168,8 @@ body {
 /* ------------------------------------------------------------------------------------------- */
 
 
-/* login.css: ログイン・登録専用スタイル */
-.login-container, .register-container {
+/* profile.css: プロフィールフォーム専用スタイル */
+.login-container, .register-container, .profile-container {
   max-width: 400px;
   margin: 80px auto 40px auto;
   padding: 40px;
@@ -179,21 +179,37 @@ body {
   text-align: left;
 }
 
-.login-container h2, .register-container h2 {
+.profile-container h2, .login-container h2, .register-container h2 {
   text-align: center;
   margin-bottom: 24px;
   color: #222;
   font-size: 24px;
 }
 
-.login-container form label, .register-container form label {
+.profile-container form label,
+.login-container form label,
+.register-container form label {
   display: block;
   margin-bottom: 6px;
   font-weight: bold;
   color: #333;
 }
 
-.login-container form input, .register-container form input {
+.profile-container form input,
+.profile-container form select,
+.profile-container form button,
+.login-container form input,
+.register-container form input,
+.login-container form button,
+.register-container form button {
+  font-family: inherit;
+}
+
+/* input, select 共通スタイル */
+.profile-container form input,
+.profile-container form select,
+.login-container form input,
+.register-container form input {
   width: 100%;
   padding: 10px 12px;
   margin-bottom: 16px;
@@ -201,15 +217,22 @@ body {
   border-radius: 8px;
   font-size: 14px;
   transition: 0.2s;
+  box-sizing: border-box;
 }
 
-.login-container form input:focus, .register-container form input:focus {
+.profile-container form input:focus,
+.profile-container form select:focus,
+.login-container form input:focus,
+.register-container form input:focus {
   border-color: #007BFF;
   outline: none;
   box-shadow: 0 0 4px rgba(0,123,255,0.3);
 }
 
-.login-container form button, .register-container form button {
+/* ボタンスタイル */
+.profile-container form button,
+.login-container form button,
+.register-container form button {
   width: 100%;
   padding: 12px;
   background-color: #007BFF;
@@ -222,21 +245,62 @@ body {
   transition: 0.2s;
 }
 
-.login-container form button:hover, .register-container form button:hover {
+.profile-container form button:hover,
+.login-container form button:hover,
+.register-container form button:hover {
   background-color: #0056b3;
 }
 
-.signup, .login {
+/* 下部リンク */
+.profile-container .signup,
+.profile-container .login,
+.signup,
+.login {
   text-align: center;
   margin-top: 12px;
 }
 
-.signup a, .login a {
+.profile-container .signup a,
+.profile-container .login a,
+.signup a,
+.login a {
   color: #007BFF;
   text-decoration: none;
   font-weight: bold;
 }
 
-.signup a:hover, .login a:hover {
+.profile-container .signup a:hover,
+.profile-container .login a:hover,
+.signup a:hover,
+.login a:hover {
   text-decoration: underline;
+}
+
+/* select を input と同じスタイルに統一 */
+.profile-container form select,
+.login-container form select,
+.register-container form select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: 0.2s;
+  box-sizing: border-box;
+  appearance: none; /* 矢印のスタイルをブラウザで統一 */
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 4 5' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 0L0 2h4L2 0z' fill='%23666'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 8px 10px;
+}
+
+.profile-container form select:focus,
+.login-container form select:focus,
+.register-container form select:focus {
+  border-color: #007BFF;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0,123,255,0.3);
 }
